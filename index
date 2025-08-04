@@ -1,0 +1,45 @@
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+require('dotenv').config();
+
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: true, args: ['--no-sandbox'] }
+});
+
+client.on('qr', (qr) => {
+    qrcode.generate(qr, { small: true });
+    console.log('QR Code gerado! Escaneie com seu WhatsApp.');
+});
+
+client.on('ready', () => {
+    console.log('🤖 zappro02 está online!');
+});
+
+client.on('message', async msg => {
+    const texto = msg.body.toLowerCase();
+
+    if (texto.includes('menu')) {
+        await msg.reply(
+            '*🤖 Bem-vindo ao SmartZap Pro!*\n\n' +
+            '1️⃣ Ver planos\n' +
+            '2️⃣ Falar com atendente\n' +
+            '3️⃣ Receber catálogo\n\n' +
+            'Digite a opção desejada.'
+        );
+    }
+
+    if (texto === '1' || texto.includes('planos')) {
+        msg.reply('📦 Nossos planos:\n- Plano Básico: R$29,90/mês\n- Plano Premium: R$49,90/mês');
+    }
+
+    if (texto === '2' || texto.includes('atendente')) {
+        msg.reply('👩 Atendimento humano: https://wa.me/5511954990631');
+    }
+
+    if (texto === '3' || texto.includes('catálogo')) {
+        msg.reply('📲 Baixe nosso catálogo: https://seulink.com.br/catalogo');
+    }
+});
+
+client.initialize();
